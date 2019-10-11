@@ -1,0 +1,351 @@
+/*
+ * clientes.c
+ *
+ *  Created on: 10 oct. 2019
+ *      Author: alumno
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "clientes.h"
+#include "utn.h"
+
+int initClientes(eClientes* list, int len)
+{
+
+	int i;
+	    int ret= -1;
+	    if(list!=NULL&&len>0)
+	    {
+	        for(i=0;i<len;i++)
+	        {
+	            list[i].idClientes=0;
+	            list[i].isEmpty = 0;
+	            strcpy(list[i].nombreEmpresa,"");
+	            strcpy(list[i].cuit,"");
+	            strcpy(list[i].direccion,"");
+	            strcpy(list[i].localidad,"");
+
+	        }
+	        ret=0;
+	    }
+	    return ret;
+}
+
+int findEmptySpaceClientes(eClientes* list, int len)
+{
+    int ret = -1;
+    int i;
+
+    for (i=1; i<len; i++)
+    {
+        if (list[i].isEmpty == 0)
+        {
+            ret = i;
+            break;
+        }
+    }
+    return ret;
+}
+
+int existClientes(eClientes* list, int len)
+{
+	int ret = -1;
+    int i;
+
+    for( i = 0; i < len; i++)
+    {
+        if(list[i].isEmpty == 1)
+        {
+            ret = 0;
+        }
+    }
+    return ret;
+}
+
+int addClientes(eClientes* list, int len, int id, char nombreEmpresa[], char cuit[], char direccion[], char localidad[])
+{
+    list[id].idClientes = id;
+    strcpy(list[id].nombreEmpresa, nombreEmpresa);
+    strcpy(list[id].cuit, cuit);
+    strcpy(list[id].direccion, direccion);
+    strcpy(list[id].localidad, localidad);
+    list[id].isEmpty = 1;
+    return id;
+}
+int controllerGetClientes(eClientes* list, int len)
+{
+	char auxNombreEmp[50];
+	char auxCuit[13];
+	char auxDireccion[50];
+	char auxLocalidad[50];
+	int ret = -1;
+	int espacioLibre;
+	espacioLibre = findEmptySpaceClientes(list,len);
+
+	if(espacioLibre != -1)
+	{
+		utn_getName("\nIngrese Nombre de la Empresa: ","\nNo es un nombre valido",1,50,3,auxNombreEmp);
+		utn_getCuit("\nIngrese Cuit del cliente: ","\nNo es un cuit valido",3,auxCuit);
+		utn_getName("\nIngrese direccion del cliente: ","\nNo es una direccion valido",1,50,3,auxDireccion);
+		utn_getName("\nIngrese localidad del cliente: ","\nNo es una localidad valido",1,50,3,auxLocalidad);
+
+		addClientes(list, len, espacioLibre, auxNombreEmp, auxCuit, auxDireccion, auxLocalidad);
+	}
+	else
+	{
+		printf("No se pueden cargar mas clientes ");
+	}
+	return ret;
+}
+
+int modifyEmployee (eClientes* list, int len)
+{
+    int ret = -1;
+    int modify;
+    int findEmployee;
+    char auxNombreEmp[50];
+    char auxCuit[13];
+    char auxDireccion[50];
+    char auxLocalidad[50];
+    int id;
+
+    printf("Ingrese ID del cliente a modificar: ");
+    scanf("%d", &id);
+
+    findEmployee = findEmployeeById(list, len, id);
+
+    if (findEmployee > 0)
+    {
+        do
+        {
+            printf("\n---------------------------------------- \n");
+            printf("1- Direccion \n2- Localidad \n3- Salir  \n");
+            printf("------------------------------------------ \n");
+            scanf("%d", &modify);
+
+            switch(modify)
+            {
+            case 1:
+            	utn_getName("\nIngrese direccion del cliente: ","\nNo es una direccion valido",1,50,3,auxDireccion);
+                strcpy(list[findEmployee].direccion, auxDireccion);
+                break;
+            case 2:
+            	utn_getName("\nIngrese localidad del cliente: ","\nNo es una localidad valido",1,50,3,auxLocalidad);
+                strcpy(list[findEmployee].localidad, auxLocalidad);
+                break;
+            default:
+                printf("Ingrese una opcion del 1 al 3: ");
+            }
+        }while (modify != 3);
+
+        printf("Se han realizado las modificaciones correctamente \n");
+    }
+    else
+    {
+        printf("No se encontro empleado con ese ID \n");
+    }
+   return ret;
+}
+
+int findEmployeeById(Employee* list, int len, int id)
+{
+    int ret = -1;
+    int i;
+
+    if (list != NULL && len > 0)
+    {
+        for (i=1; i<len; i++)
+        {
+            if (list[i].isEmpty == 1 && list[i].id == id)
+            {
+                return i;
+            }
+        }
+    }
+    return ret;
+}
+
+int removeEmployee (Employee* list, int len, int id)
+{
+    int findEmployee;
+
+    findEmployee = findEmployeeById(list, len, id);
+
+    if (findEmployee > 0)
+    {
+        list[findEmployee].isEmpty = -1;
+        printf("Empleado eliminado con exito \n");
+    }
+    else
+    {
+        printf("No se ha encontrado empleado con ese ID \n");
+    }
+
+    return findEmployee;
+}
+
+int getDeleteEmployee(Employee* list,int len)
+{
+    int ret=-1;
+    int auxId;
+    getValidInt("\nIngrese id: ","\nValor invalido",&auxId,0,9999,10);
+    if(findEmployeeById(list,len,auxId)>=0)
+    {
+        removeEmployee(list,len,auxId);
+        ret=0;
+    }
+    else
+    {
+        printf("\nId invalido");
+    }
+    return ret;
+}
+
+
+int printEmployees (Employee* list, int len)
+{
+    int ret = -1;
+    int i;
+
+    if(len > 0)
+    {
+        printf("ID\tNombre\t\tApellido\t\tSalario\t\tSector \n");
+
+        for(i=0; i<len; i++)
+        {
+            if (list[i].isEmpty == 1)
+            {
+
+                printf("%d\t%s\t\t%s\t\t\t%.2f\t\t%d \n", list[i].id, list[i].name, list[i].lastName, list[i].salary, list[i].sector);
+            }
+        }
+        ret = 0;
+    }
+    return ret;
+}
+
+int sortEmployeeByName(Employee* list, int len, int order)
+{
+    int ret = -1;
+
+    Employee auxiliar;
+
+    if(len > 0 && list != NULL)
+    {
+        switch(order)
+        {
+            case 1:
+                if(len > 0 && list != NULL)
+                {
+                    for(int i=0; i<len - 1; i++)
+                    {
+                        for(int j=i+1; j<len; j++)
+                        {
+                            if(strcmp(list[j].lastName, list[i].lastName) < 0)
+                            {
+                                auxiliar = list[i];
+                                list[i] = list[j];
+                                list[j] = auxiliar;
+                            }
+                            else if(strcmp(list[j].lastName, list[i].lastName) == 0 && list[j].sector < list[i].sector)
+                            {
+                                auxiliar = list[i];
+                                list[i] = list[j];
+                                list[j] = auxiliar;
+                            }
+                        }
+                    }
+                ret = 0;
+                break;
+            case 2:
+                for(int i = 0; i < len - 1; i++)
+                {
+                    for(int j = i + 1; j < len; j++)
+                    {
+                        if(strcmp(list[j].lastName, list[i].lastName) > 0)
+                        {
+                            auxiliar = list[i];
+                            list[i] = list[j];
+                            list[j] = auxiliar;
+                        }
+                        else if(strcmp(list[j].lastName, list[i].lastName) == 0 && list[j].sector > list[i].sector)
+                        {
+                            auxiliar = list[i];
+                            list[i] = list[j];
+                            list[j] = auxiliar;
+                        }
+                    }
+                }
+                ret = 0;
+                break;
+            default:
+                printf("Ingrese 1 para ascendente o 2 para descendente \n");
+            }
+        }
+    }
+    return ret;
+}
+
+void averageEmployeesSalary (Employee* list, int len)
+{
+    float average = 0;
+    float total = 0;
+    int employeeCounter = 0;
+    int salaryGreaterThanAverage = 0;
+    int i;
+
+    for (i=0; i<len; i++)
+    {
+        if(list[i].isEmpty == 1)
+        {
+            employeeCounter ++;
+            total = total + list[i].salary;
+        }
+    }
+    average = total / employeeCounter ;
+
+    for (i=0; i<len; i++)
+    {
+        if(list[i].isEmpty == 1 && list[i].salary >average)
+        {
+            salaryGreaterThanAverage ++;
+        }
+    }
+
+    printf("Total de salarios: %.2f \n", total);
+    printf("Promedio de salarios: %.2f \n", average);
+    printf("Cantidad de empleados con salario mayor al promedio: %d \n", salaryGreaterThanAverage);
+
+}
+
+void informesEmployees(Employee* list, int len)
+{
+	int opcionInf;
+	int order;
+	do
+	{
+		printf("/-----------------\n1. Listado de los empleados ordenados alfabeticamente por Apellido y Sector\n"
+				"2. Total y promedio de los salarios, y cuántos empleados superan el salario promedio.\n3.SALIR");
+		getValidInt("\nSelecione una opcion: ","\nOpcion invalida",&opcionInf,1,3,10);
+		switch(opcionInf)
+		{
+		case 1:
+			printf("Defina el orden de los empleados \n");
+			printf("1- Ascendente \n2- Descendente \n");
+			getValidInt("\nSelecione una opcion: ","\nOpcion invalida",&order,1,3,10);
+			sortEmployeeByName(list, len, order);
+			printEmployees(list, len);
+			break;
+		case 2:
+			averageEmployeesSalary (list, len);
+			break;
+		case 3:
+			printf("\n Saliendo de modificaciones");
+			break;
+		default:
+			printf("\n Ingrese una opcion de 1 a 3 ");
+		}
+	}while(opcionInf != 3);
+
+}

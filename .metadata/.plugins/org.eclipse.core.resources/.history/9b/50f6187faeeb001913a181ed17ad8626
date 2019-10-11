@@ -1,0 +1,48 @@
+/*
+ ============================================================================
+ Name        : main.c
+ Author      : 
+ Version     :
+ Copyright   : Your copyright notice
+ Description : Hello World in C, Ansi-style
+ ============================================================================
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "clientes.h"
+#include "utn.h"
+#include "pedidos.h"
+
+#define QTY_CLIENTES 100
+#define QTY_PEDIDOS 1000
+
+int main()
+{
+	int opcion;
+
+	eClientes arrayClientes[QTY_CLIENTES];
+	initClientes(arrayClientes,QTY_CLIENTES);
+
+
+	do
+	{
+		 printf("\n1-MENU DE OPCIONES\
+		                        \n\n1-ALTAS CLIENTES\
+		                        \n2-MODIFICAR DATOS DE CLIENTE\
+		                        \n3-BAJA DE CLIENTE\
+		                        \n4-CREAR PEDIDO DE RECOLECCION\
+				 	 	 	 	\n5 PROCESAR RESIDUOS \
+								\n6 IMPRIMIR CLIENTES\
+								\n6 IMPRIMIR CLIENTES\
+								\n6 IMPRIMIR CLIENTES\
+		            		    \n5-SALIR\n");
+
+		        __fpurge(stdin);
+		switch(opcion)
+		{
+
+		}
+	}while(opcion != 9);
+
+}

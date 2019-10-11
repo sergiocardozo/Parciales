@@ -1,0 +1,23 @@
+21:42:00 **** Incremental Build of configuration Debug for project main ****
+make all 
+Building file: ../src/pedidos.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pedidos.d" -MT"src/pedidos.o" -o "src/pedidos.o" "../src/pedidos.c"
+../src/pedidos.c: In function ‘controllerGetPedidos’:
+../src/pedidos.c:150:41: error: ‘kilos’ undeclared (first use in this function)
+                  addPedidos(list,len,id,kilos,tiposResiduos);
+                                         ^~~~~
+../src/pedidos.c:150:41: note: each undeclared identifier is reported only once for each function it appears in
+../src/pedidos.c: In function ‘pedidos_terminados’:
+../src/pedidos.c:203:19: error: incompatible types when assigning to type ‘ePedidos {aka struct <anonymous>}’ from type ‘int’
+         auxPedido = pedido_find(list,len,idPedidos);
+                   ^
+../src/pedidos.c:204:22: error: invalid operands to binary != (have ‘ePedidos {aka struct <anonymous>}’ and ‘void *’)
+         if(auxPedido != NULL)
+                      ^~
+make: *** [src/pedidos.o] Error 1
+src/subdir.mk:27: fallo en las instrucciones para el objetivo 'src/pedidos.o'
+"make all" terminated with exit code 2. Build might be incomplete.
+
+21:42:00 Build Failed. 5 errors, 0 warnings. (took 263ms)
+
