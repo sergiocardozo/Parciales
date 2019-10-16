@@ -14,12 +14,15 @@
 #include "clientes.h"
 #include "utn.h"
 #include "pedidos.h"
+#include "controller.h"
 
 #define QTY_CLIENTES 100
 #define QTY_PEDIDOS 1000
 
 int main()
 {
+	int contadorClientes;
+	int contadorPedidos;
 	int opcion;
 	char menuPrincipalMensaje[] ="\n1-MENU DE OPCIONES\
             \n\n1-ALTAS CLIENTES\
@@ -32,8 +35,11 @@ int main()
 			\n8 IMPRIMIR PEDIDOS PROCESADOS\
 		    \n9-SALIR\n\n\
 			\nIngrese opcion:";
+
 	eClientes arrayClientes[QTY_CLIENTES];
-	initClientes(arrayClientes,QTY_CLIENTES);
+	ePedidos arrayPedidos[QTY_PEDIDOS];
+	cliente_Inicializar(arrayClientes,QTY_CLIENTES);
+	pedidos_Inicializar(arrayPedidos,QTY_PEDIDOS);
 
 
 	do
@@ -46,14 +52,14 @@ int main()
 		{
 		case 1:
 			printf("\n ALTAS\n");
-			controllerGetClientes(arrayClientes,QTY_CLIENTES);
+			cliente_alta(arrayClientes,QTY_CLIENTES,&contadorClientes);
 			break;
 		case 2:
 			printf("\nMODIFICAR\n");
-			printClientes(arrayClientes,QTY_CLIENTES);
-			if(existClientes(arrayClientes,QTY_CLIENTES)==0)
+			cliente_listar(arrayClientes,QTY_CLIENTES);
+			if(clientesExistente(arrayClientes,QTY_CLIENTES)==0)
 			{
-				modificarClientes(arrayClientes,QTY_CLIENTES);
+				cliente_modificar(arrayClientes,QTY_CLIENTES);
 			}
 			else
 			{
@@ -62,10 +68,10 @@ int main()
 			break;
 		case 3:
 			printf("\nBAJAS\n");
-			printClientes(arrayClientes,QTY_CLIENTES);
-			if(existClientes(arrayClientes,QTY_CLIENTES)==0)
+			cliente_listar(arrayClientes,QTY_CLIENTES);
+			if( clientesExistente(arrayClientes,QTY_CLIENTES)==0)
 			{
-				getDeleteClientes(arrayClientes,QTY_CLIENTES);
+				cliente_baja(arrayClientes,QTY_CLIENTES);
 			}
 			else
 			{
@@ -73,8 +79,23 @@ int main()
 			}
 			break;
 		case 4:
-				printClientes(arrayClientes,QTY_CLIENTES);
-
+			printf("\nCREAR PEDIDO DE RECOLECCION");
+			cliente_listar(arrayClientes,QTY_CLIENTES);
+			pedidos_alta(arrayPedidos,QTY_PEDIDOS,&contadorPedidos);
+			break;
+		case 5:
+			printf("PROCESAR RESIDUOS");
+			pedidos_listar(arrayPedidos,QTY_PEDIDOS);
+			pedidos_procesar(arrayPedidos,QTY_PEDIDOS);
+			break;
+		case 6:
+			listarClientesPendiente(arrayClientes,QTY_CLIENTES,arrayPedidos,QTY_PEDIDOS);
+			break;
+		case 7:
+			listar_pendientes(arrayClientes,QTY_CLIENTES,arrayPedidos,QTY_PEDIDOS);
+			break;
+		case 8:
+			pedido_ImprimirArrayProcesado(arrayClientes,QTY_CLIENTES,arrayPedidos,QTY_PEDIDOS);
 			break;
 		case 9:
 			break;

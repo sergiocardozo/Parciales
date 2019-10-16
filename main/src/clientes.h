@@ -8,6 +8,8 @@
 #ifndef CLIENTES_H_
 #define CLIENTES_H_
 
+#include "pedidos.h"
+
 typedef struct
 {
 	int idClientes;
@@ -19,87 +21,74 @@ typedef struct
 
 }eClientes;
 
-/** \brief Indicates that all positions of the array are empty, setting the isEmpty flag in TRUE in all array positions
-     *
-     * \param list eClientes* Pointer to array of employees
-     * \param len int Array length
-     * \return Return -1 if error (NULL or invalid), 0 if no error
-     *
-     */
-    int initClientes(eClientes* list, int len);
+/** \brief  Para indicar que todas las posiciones en el array están vacías,
+* esta función pone la bandera (isEmpty) en TRUE en todos
+* posición del array
+* \ param array eClientes array de clientes
+* \ param size int largo del array
+* \ return int retorna (-1) si da Error [Longitud inválida o puntero NULL] - (0) si esta Ok
+*
+*/
+int cliente_Inicializar(eClientes array[], int size);
 
-    /** \brief add in a existing list of employees the values received as parameters in the first empty position.
-     * \param list eClientes* Pointer to array of employees
-     * \param len int Array length
-     * \param id int Id number
-     * \param nameEmpresa[] char NameEmp array
-     * \param cuit[] char cuit name array
-     * \param direccion[] char direccion array
-     * \param localidad[] char localidad array
-     * \return Return -1 if error (NULL or invalid), 0 if no error
-     */
-    int addClientes(eClientes* list, int len, int id, char nombreEmpresa[], char cuit[], char direccion[], char localidad[]);
+/** \brief Busca el primer lugar vacio en un array
+* \param array eClientes Array de clientes
+* \param size int Tamaño del array
+* \param posicion int* Puntero a la posicion del array donde se encuentra el valor buscado
+* \return int Return (-1) si no encuentra un lugar vacio o Error [Invalid length or NULL pointer] - (0) si encuentra una posicion vacia
+*
+*/
+int cliente_buscarEmpty(eClientes array[], int size, int* posicion);
 
-    /** \brief request to the users the information for a new employee
-     *
-     * \param list eclientes*
-     * \param len int
-     * \return int Return (-1) if Error [Invalid length or NULL pointer] - (0) if Ok
-     *
-     */
-    int controllerGetClientes(eClientes* list, int len);
+/** \brief Busca un ID en un array y devuelve la posicion en que se encuentra
+* \param array eCliente Array de clientes
+* \param size int Tamaño del array
+* \param posicion int* Puntero a la posicion del array donde se encuentra el valor buscado
+* \return int Return (-1) si no encuentra el valor buscado o Error [Invalid length or NULL pointer] - (0) si encuentra el valor buscado
+*
+*/
+int cliente_buscarID(eClientes array[], int size, int valorBuscado, int* posicion);
 
-    /** \brief Gets free space from the index
+/** \brief Verifica si hay al menos un cliente cargado en el array
      *
-     * \param list eClientes* Pointer to array of clientes
-     * \param len int Array length
-     * \return Return -1 if error (NULL or invalid), 0 if no error
+     * \param list eClientes lista del campo de eClientes
+     * \param len int  largo del array
+     * \return 0 si no hay Clientes, 1 si hay al menos uno cargado
      *
      */
+int clientesExistente(eClientes list[], int len);
 
-    int existClientes(eClientes* list, int len);
+/** \brief Solicita los datos para completar la primer posicion vacia de un array
+* \param array eClientes Array de clientes
+* \param size int Tamaño del array
+* \param contadorID int* Puntero al ID unico que se va a asignar al nuevo elemento
+* \return int Return (-1) si Error [largo no valido o NULL pointer o no hay posiciones vacias] - (0) si se agrega un nuevo elemento exitosamente
+*
+*/
+int cliente_alta(eClientes array[], int size, int* contadorID);
 
-    int findEmptySpaceClientes(eClientes* list, int len);
+/** \brief Borra un elemento del array por ID
+* \param array eClientes Array de clientes
+* \param size int Tamaño del array
+* \return int Return (-1) si Error [largo no valido o NULL pointer o no encuentra elementos con el valor buscado] - (0) si se elimina el elemento exitosamente
+*
+*/
+int cliente_baja(eClientes clieArray[], int sizeClieArray);
 
-    /** \brief find an eCliente by Id en returns the index position in array.
-     * \param list eCliente* Pointer to array of clientes
-     * \param len int Array length
-     * \param id int Id number
-     * \return Return -1 if error (NULL or invalid), 0 if no error
-     */
-    int findClientesById(eClientes* list, int len, int id);
+/** \brief Busca un elemento por ID y modifica sus campos direccion y localidad
+* \param array eClientes Array de clientes
+* \param size int Tamaño del array
+* \return int Return (-1) si Error [largo no valido o NULL pointer o no encuentra elementos con el valor buscado] - (0) si se modifica el elemento exitosamente
+*
+*/
+int cliente_modificar(eClientes array[], int sizeArray);
 
-    /** \brief Find an employee by id and asks what wants the user to modify
-     *
-     * \param list eClientes* Pointer to array of employees
-     * \param len int Array length
-     * \return Return modified data
-     *
-     */
-    int modificarClientes(eClientes* list, int len);
-
-    /** \brief Remove a Employee by Id (put isEmpty Flag in 1).
-     * \param list Employee* Pointer to array of employees
-     * \param len int Array length
-     * \param id int Id number
-     * \return Return -1 if error (NULL or invalid), 0 if no error
-     */
-    int removeClientes(eClientes* list, int len, int id);
-
-    /** \brief Request an id and deletes the register.
-     *
-     * \param list Employee*
-     * \param length int
-     * \return int Return (-1) if Error [Invalid length or NULL pointer] - (0) if Ok
-     *
-     */
-    int getDeleteClientes(eClientes *list,int len);
-
-    /** \brief print the content of employees array.
-     * \param list Employee* Pointer to array of employees
-     * \param length int Array length
-     * \return int.
-     */
-    int printClientes(eClientes* list, int len);
+/** \brief Lista los elementos de un array
+* \param array eClientes Array de clientes
+* \param size int Tamaño del array
+* \return int Return (-1) si Error [largo no valido o NULL pointer] - (0) si se lista exitosamente
+*
+*/
+int cliente_listar(eClientes array[], int size);
 
 #endif /* CLIENTES_H_ */

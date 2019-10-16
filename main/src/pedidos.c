@@ -4,6 +4,7 @@
  *  Created on: 10 oct. 2019
  *      Author: alumno
  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,90 +12,39 @@
 #include "pedidos.h"
 #include "utn.h"
 
-int initPedidos(ePedidos* list, int len)
+static int generarIdPedidos()
 {
-
-	int i;
-	    int ret= -1;
-	    if(list!=NULL&&len>0)
-	    {
-	        for(i=0;i<len;i++)
-	        {
-	        	list[i].idPedidos=0;
-	            list[i].idClientes=0;
-	            list[i].kilos=0;
-	            list[i].estado=0;
-	            list[i].tiposResiduos=0;
-	            list[i].isEmpty = 0;
-
-
-	        }
-	        ret=0;
-	    }
-	    return ret;
+	static int idMax=0;
+	return idMax++;
 }
 
-int findEmptySpacePedidos(ePedidos* list, int len)
+
+int pedidos_Inicializar(ePedidos array[], int size)
 {
-    int ret = -1;
-    int i;
-
-    for (i=1; i<len; i++)
-    {
-        if (list[i].isEmpty == 0)
-        {
-            ret = i;
-            break;
-        }
-    }
-    return ret;
-}
-
-int existPedidos(ePedidos* list, int len)
-{
-	int ret = -1;
-    int i;
-
-    for( i = 0; i < len; i++)
-    {
-        if(list[i].isEmpty == 1)
-        {
-            ret = 0;
-        }
-    }
-    return ret;
-}
-
-int pedidosFindNextId(ePedidos* list, int length)
-{
-    int i, maxId=-1;
     int retorno=-1;
-    if(list != NULL && length > 0)
+    if(array!= NULL && size>0)
     {
-        for(i=0;i<length;i++)
+        for(;size>0;size--)
         {
-            if(list[i].isEmpty == 1 )
-            {
-                if(list[i].idPedidos > maxId || maxId == -1)
-                    maxId = list[i].idPedidos;
-            }
+            array[size-1].isEmpty=1;
         }
-        retorno = maxId+1;
+        retorno=0;
     }
     return retorno;
 }
 
-int pedido_find(ePedidos* list, int len, int idPedidos)
+int pedidos_buscarEmpty(ePedidos array[], int size, int* posicion)
 {
-    int retorno = -1;
+    int retorno=-1;
     int i;
-    if(list != NULL && len > 0)
+    if(array!= NULL && size>=0 && posicion!=NULL)
     {
-        for(i=0;i<len;i++)
+        for(i=0;i<size;i++)
         {
-            if(list[i].idPedidos == idPedidos && list[i].isEmpty == 1)
+            if(array[i].isEmpty==1)
             {
-                retorno = i;
+                retorno=0;
+                *posicion=i;
                 break;
             }
         }
@@ -102,154 +52,146 @@ int pedido_find(ePedidos* list, int len, int idPedidos)
     return retorno;
 }
 
-int addPedidos(ePedidos* list, int len, int idClientes, float kilos, int tiposResiduos)
-{
-	int retorno=-1;
-	    int id,index;
-	    if(list != NULL && len > 0)
-	    {
-	        index = findEmptySpacePedidos(list, len);
-	        if(index != -1)
-	        {
-	            id = pedidosFindNextId(list, len);
-	            list[index].estado = PENDIENTE;
-	            list[index].idPedidos = id;
-	            list[index].idClientes = idClientes;
-	            list[index].kilos = kilos;
-	            list[index].tiposResiduos = tiposResiduos;
-	            list[index].isEmpty = 1;
 
-	            retorno=0;
-	        }
-	    }
-	    return retorno;
-}
-
-int controllerGetPedidos(ePedidos* list, int len)
-{
-	int id, tiposResiduos;
-
-	    int retorno=-1;
-
-
-	    retorno = getValidInt("\nID del cliente ","\nRango valido 0-100", &id,0,100,3);
-
-	    if(retorno == 0)
-	    {
-	        if(findPedidosById(list, len, id) == -1)
-	        {
-	            printf("El cliente elegido no existe\n");
-
-	        }
-	        else
-	        {
-	            retorno = getValidInt("\nTipos de Residuos:\n  HDPE [0]\n  LDPE [1]\n  PP [2]\n Opcion:  ",
-	            		"\nRango valido 0-2", &tiposResiduos,0,2,3);
-	            if(retorno == 0)
-	            {
-	                addPedidos(list,len,id,kilos,tiposResiduos);
-	            }
-	        }
-	    }
-	    return retorno;
-	}
-
-
-
-int findPedidosById(ePedidos* list, int len, int id)
-{
-    int ret = -1;
-    int i;
-
-    if (list != NULL && len > 0)
-    {
-        for (i=1; i<len; i++)
-        {
-            if (list[i].isEmpty == 1 && list[i].idClientes == id)
-            {
-                return i;
-            }
-        }
-    }
-    return ret;
-}
-
-int removePedidos (ePedidos* list, int len, int id)
-{
-    int findPedidos;
-
-    findPedidos = findPedidosById(list, len, id);
-
-    if (findPedidos > 0)
-    {
-        list[findPedidos].isEmpty = -1;
-        printf("Pedido eliminado con exito \n");
-    }
-    else
-    {
-        printf("No se ha encontrado pedido con ese ID \n");
-    }
-
-    return findPedidos;
-}
-
-int pedidos_terminados(ePedidos* list, int len, int idPedidos, int estado)
+int pedidos_buscarID(ePedidos array[], int size, int valorBuscado, int* posicion)
 {
     int retorno=-1;
-    ePedidos auxPedido;
-
-    if(list != NULL && len > 0)
+    int i;
+    if(array!= NULL && size>=0)
     {
-        auxPedido = pedido_find(list,len,idPedidos);
-        if(auxPedido != NULL)
+        for(i=0;i<size;i++)
         {
-            auxPedido.estado = estado;
-            retorno=0;
+            if(array[i].isEmpty==1)
+                continue;
+            else if(array[i].idPedidos==valorBuscado)
+            {
+                retorno=0;
+                *posicion=i;
+                break;
+            }
         }
     }
     return retorno;
 }
-int getDeletePedidos(ePedidos* list,int len)
+
+int pedidos_alta(ePedidos array[], int size, int* contadorID)
 {
-    int ret=-1;
-    int auxId;
-    utn_getUnsignedInt("\nIngrese id: ","\nValor invalido",1,sizeof(int),0,100,10,&auxId);
-    if(findPedidosById(list,len,auxId)>=0)
+    int retorno=-1;
+    int posicion;
+    if(array!=NULL && size>0 && contadorID>0)
     {
-        removePedidos(list,len,auxId);
-        ret=0;
+        if(pedidos_buscarEmpty(array,size,&posicion)==-1)
+        {
+            printf("\nNo hay lugares vacios");
+        }
+        else
+        {
+        	if(utn_getUnsignedInt("\n:Ingrese ID de cliente: ","\nError",1,sizeof(int),1,size,2,&array[posicion].idClientes)==0)
+        	{
+        		(*contadorID)++;
+        		array[posicion].idPedidos = generarIdPedidos();
+        		array[posicion].isEmpty=0;
+        		array[posicion].estado=PENDIENTE;
+        		utn_getFloat("\n:Ingrese cantidad de kilos: ","\nError",1,sizeof(float),1,10000,2,&array[posicion].kilos);
+
+        		printf("\n_ID: %d _Cantidad de kilos: %f _Estado: Pendiente",array[posicion].idPedidos,array[posicion].kilos);
+        		retorno=0;
+        	}
+        	else
+        	{
+        		printf("Numero de ID incorrecto");
+        	}
+        }
     }
-    else
-    {
-        printf("\nId invalido");
-    }
-    return ret;
+    return retorno;
 }
 
 
-int printPedidos (ePedidos* list, int len)
+int pedidos_procesar(ePedidos array[], int size)
 {
-    int ret = -1;
-    int i;
+    int retorno=-1;
+    int posicion;
+    int id;
 
-    if(len > 0)
+    if(array!=NULL && size>0)
     {
-        printf("\tId Pedidos\t\tID clientes\t\tkilos\t\tEstado\t\tTipos de Residuos \n");
+    	utn_getUnsignedInt("\nID de pedido: ","\nError",1,sizeof(int),1,size,3,&id);
+    	if(pedidos_buscarID(array,size,id,&posicion)==-1)
+    	{
+    		printf("No existe el ID del pedido");
+    	}
+    	else
+    	{
+    		if(array[posicion].estado==0)
+    		 {
+    			utn_getFloat("\nCantidad de kilos de HDPE ","\nError",1,sizeof(float),1,3000,1,&array[posicion].HDPE);
+    			utn_getFloat("\nCantidad de kilos de LPDE ","\nError",1,sizeof(float),1,3000,1,&array[posicion].LPDE);
+    			utn_getFloat("\nCantidad de kilos de PP ","\nError",1,sizeof(float),1,3000,1,&array[posicion].PP);
+    			utn_getFloat("\nCantidad de kilos de residuos Desechables ","\nError",1,sizeof(float),1,3000,1,&array[posicion].desechables);
 
-        for(i=0; i<len; i++)
+    			array[posicion].estado=COMPLETADOS;
+    		    printf("\n ID: %d"
+    		    		"\tCantidad de kilos: %.2f"
+    		    		"\tCantidad de kilosHDPE: %.2f"
+    		    		"\tCantidad de kilosLDPE: %.2f"
+    		    		"\tCantidad de kilosPP: %.2f"
+    		    		"\tCantidad de kilos de residuos desechables: %.2f"
+    		    		"\tEstado: Completado",
+						array[posicion].idPedidos,
+						array[posicion].kilos,
+						array[posicion].HDPE,
+						array[posicion].LPDE,
+						array[posicion].PP,
+						array[posicion].desechables);
+
+    		 }
+
+    		else
+    		{
+    			printf("El pedido ya fue procesado");
+    		}
+    	}
+
+    }
+
+
+    return retorno;
+}
+
+
+
+int pedidos_listar(ePedidos array[], int size)
+{
+    int retorno=-1;
+    int i;
+    if(array!=NULL && size>=0)
+    {
+        for(i=0;i<size;i++)
         {
-            if (list[i].isEmpty == 1)
+            if(array[i].isEmpty==1)
             {
-
-                printf("%d\t%d\t\t%.2f\t\t\t%d\t\t%d \n", list[i].idPedidos,
-                										list[i].idClientes,
-                										list[i].kilos,
-														list[i].estado,
-														list[i].tiposResiduos);
+                continue;
+            }
+            else
+            {
+            	printf("\n ID: %d"
+            	       "\n Cantidad de kilos: %f",
+            	        array[i].idPedidos,
+            	        array[i].kilos);
+            	if(array[i].estado==0)
+            	{
+            		printf("\n Estado: Pendiente");
+            	}
+            	else
+            	{
+            		printf("\n Estado: Completado");
+            	}
             }
         }
-        ret = 0;
+        retorno=0;
     }
-    return ret;
+    return retorno;
 }
+
+
 

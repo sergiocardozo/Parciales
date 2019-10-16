@@ -1,54 +1,197 @@
-/*
- * clientes.c
- *
- *  Created on: 10 oct. 2019
- *      Author: alumno
- */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "clientes.h"
 #include "utn.h"
+#include "pedidos.h"
 
-int initClientes(eClientes* list, int len)
+static int generarIdCliente()
 {
-
-	int i;
-	    int ret= -1;
-	    if(list!=NULL&&len>0)
-	    {
-	        for(i=0;i<len;i++)
-	        {
-	            list[i].idClientes=0;
-	            list[i].isEmpty = 0;
-	            strcpy(list[i].nombreEmpresa,"");
-	            strcpy(list[i].cuit,"");
-	            strcpy(list[i].direccion,"");
-	            strcpy(list[i].localidad,"");
-
-	        }
-	        ret=0;
-	    }
-	    return ret;
+	static int idMax=0;
+	return idMax++;
+}
+int cliente_Inicializar(eClientes array[], int size)
+{
+    int retorno=-1;
+    if(array!= NULL && size>0)
+    {
+        for(;size>0;size--)
+        {
+            array[size-1].isEmpty=1;
+        }
+        retorno=0;
+    }
+    return retorno;
 }
 
-int findEmptySpaceClientes(eClientes* list, int len)
-{
-    int ret = -1;
-    int i;
 
-    for (i=1; i<len; i++)
+int cliente_buscarEmpty(eClientes array[], int size, int* posicion)
+{
+    int retorno=-1;
+    int i;
+    if(array!= NULL && size>=0 && posicion!=NULL)
     {
-        if (list[i].isEmpty == 0)
+        for(i=0;i<size;i++)
         {
-            ret = i;
-            break;
+            if(array[i].isEmpty==1)
+            {
+                retorno=0;
+                *posicion=i;
+                break;
+            }
         }
     }
-    return ret;
+    return retorno;
 }
 
-int existClientes(eClientes* list, int len)
+
+int cliente_buscarID(eClientes array[], int size, int valorBuscado, int* posicion)
+{
+    int retorno=-1;
+    int i;
+    if(array!= NULL && size>=0)
+    {
+        for(i=0;i<size;i++)
+        {
+            if(array[i].isEmpty==1)
+                continue;
+            else if(array[i].idClientes==valorBuscado)
+            {
+                retorno=0;
+                *posicion=i;
+                break;
+            }
+        }
+    }
+    return retorno;
+}
+
+int cliente_alta(eClientes array[], int size, int* contadorID)
+{
+    int retorno=-1;
+    int posicion;
+    if(array!=NULL && size>0 && contadorID!=NULL)
+    {
+        if(cliente_buscarEmpty(array,size,&posicion)==-1)
+        {
+            printf("\nNo hay lugares vacios");
+        }
+        else
+        {
+
+            array[posicion].idClientes = generarIdCliente();
+        	array[posicion].isEmpty=0;
+        	utn_getName("\nIngrese nombre de la Empresa: ","\nError",1,50,2,array[posicion].nombreEmpresa);
+        	utn_getTexto("\nIngrese Cuit: ","\nError",1,13,2,array[posicion].cuit);
+        	utn_getTexto("\nIngrese direccion: ","\nError",1,50,2,array[posicion].direccion);
+        	utn_getName("\nIngrese localidad: ","\nError",1,50,2,array[posicion].localidad);
+
+
+            printf( "\n ID: %d\t Nombre Empresa: %s\t Cuit: %s\t Direccion: %s\t Localidad: %s",
+				   array[posicion].idClientes,
+				   array[posicion].cuit,
+				   array[posicion].nombreEmpresa,
+				   array[posicion].direccion,
+				   array[posicion].localidad);
+            retorno=0;
+        }
+    }
+    return retorno;
+}
+
+
+
+int cliente_baja(eClientes clieArray[], int sizeClieArray)
+{
+    int retorno=-1;
+    int posicion;
+    int id;
+    char opcion;
+    if(clieArray!=NULL && sizeClieArray>0)
+    {
+    	utn_getUnsignedInt("\nID de cliente a dar de baja: ","\nError",1,sizeof(int),1,sizeClieArray,3,&id);
+        if(cliente_buscarID(clieArray,sizeClieArray,id,&posicion)==-1)
+        {
+            printf("\nNo existe este ID");
+        }
+        else
+        {
+        	utn_getChar("\nEsta seguro que desea dar de baja? S/N","\nError",'A','S',2,&opcion);
+        	switch(opcion)
+        	{
+        	  case 'S':
+        		  clieArray[posicion].isEmpty=1;
+        		  clieArray[posicion].idClientes=0;
+        		  strcpy(clieArray[posicion].nombreEmpresa,"");
+        		  strcpy(clieArray[posicion].cuit,"");
+        		  strcpy(clieArray[posicion].direccion,"");
+        		  strcpy(clieArray[posicion].localidad,"");
+
+        		  retorno = 0;
+        	      break;
+        	  case 'N':
+        		  printf("\nBaja cancelada");
+        	      break;
+        	  default:
+        		  printf("\nOpcion no valida");
+        	 }
+
+        }
+
+        retorno=0;
+    }
+
+   	return retorno;
+}
+
+
+int cliente_modificar(eClientes array[], int sizeArray)
+{
+    int retorno=-1;
+    int posicion;
+    int id;
+    char opcion;
+    if(array!=NULL && sizeArray>0)
+    {
+    	utn_getUnsignedInt("\nID de cliente a modificar: ","\nError",1,sizeof(int),1,sizeArray,2,&id);
+        if(cliente_buscarID(array,sizeArray,id,&posicion)==-1)
+        {
+            printf("\nNo existe este ID");
+        }
+        else
+        {
+            do
+            {
+            	printf( "\nID: %d\tCuil: %s\tNombre: %s\tDireccion %s\tLocalidad: %s",
+            			array[posicion].idClientes,
+						array[posicion].cuit,
+            			array[posicion].nombreEmpresa,
+						array[posicion].direccion,
+						array[posicion].localidad);
+                utn_getChar("\nModificar: Direccion(A) Localidad(B) S(Salir)","\nError",'A','S',2,&opcion);
+                switch(opcion)
+                {
+                    case 'A':
+                    	utn_getName("\nIngrese direccion: ","\nError",1,50,2,array[posicion].direccion);
+                    	break;
+                    case 'B':
+                    	utn_getName("\nIngrese localidad: ","\nError",1,50,2,array[posicion].localidad);
+                        break;
+                    case 'S':
+                        break;
+                    default:
+                        printf("\nOpcion no valida");
+                }
+            }while(opcion!='S');
+            retorno=0;
+        }
+    }
+    return retorno;
+}
+
+
+
+int clientesExistente(eClientes list[], int len)
 {
 	int ret = -1;
     int i;
@@ -63,168 +206,32 @@ int existClientes(eClientes* list, int len)
     return ret;
 }
 
-int addClientes(eClientes* list, int len, int id, char nombreEmpresa[], char cuit[], char direccion[], char localidad[])
+int cliente_listar(eClientes array[], int size)
 {
-
-    list[id].idClientes = id;
-    strcpy(list[id].nombreEmpresa, nombreEmpresa);
-    strcpy(list[id].cuit, cuit);
-    strcpy(list[id].direccion, direccion);
-    strcpy(list[id].localidad, localidad);
-    list[id].isEmpty = 1;
-    return id;
-}
-int controllerGetClientes(eClientes* list, int len)
-{
-	char auxNombreEmp[50];
-	char auxCuit[13];
-	char auxDireccion[50];
-	char auxLocalidad[50];
-	int ret = -1;
-	int espacioLibre;
-	espacioLibre = findEmptySpaceClientes(list,len);
-
-	if(espacioLibre != -1)
-	{
-		utn_getName("\nIngrese Nombre de la Empresa: ","\nNo es un nombre valido",1,50,3,auxNombreEmp);
-		utn_getCUIT("\nIngrese Cuit del cliente con guiones(-): ","\nNo es un cuit valido",3,auxCuit);
-		utn_getName("\nIngrese direccion del cliente: ","\nNo es una direccion valido",1,50,3,auxDireccion);
-		utn_getName("\nIngrese localidad del cliente: ","\nNo es una localidad valido",1,50,3,auxLocalidad);
-
-		addClientes(list, len, espacioLibre, auxNombreEmp, auxCuit, auxDireccion, auxLocalidad);
-	}
-	else
-	{
-		printf("No se pueden cargar mas clientes ");
-	}
-	return ret;
-}
-
-int modificarClientes(eClientes* list, int len)
-{
-    int ret = -1;
-    int modify;
-    int findClientes;
-    char auxDireccion[50];
-    char auxLocalidad[50];
-    int id;
-
-    printf("Ingrese ID del cliente a modificar: ");
-    scanf("%d", &id);
-
-    findClientes = findClientesById(list, len, id);
-
-    if (findClientes > 0)
-    {
-        do
-        {
-            printf("\n---------------------------------------- \n");
-            printf("1- Direccion \n2- Localidad \n3- Salir  \n");
-            printf("------------------------------------------ \n");
-            scanf("%d", &modify);
-
-            switch(modify)
-            {
-            case 1:
-            	utn_getName("\nIngrese direccion del cliente: ","\nNo es una direccion valido",1,50,3,auxDireccion);
-                strcpy(list[findClientes].direccion, auxDireccion);
-                break;
-            case 2:
-            	utn_getName("\nIngrese localidad del cliente: ","\nNo es una localidad valido",1,50,3,auxLocalidad);
-                strcpy(list[findClientes].localidad, auxLocalidad);
-                break;
-            default:
-                printf("Ingrese una opcion del 1 al 3: ");
-            }
-        }while (modify != 3);
-
-        printf("Se han realizado las modificaciones correctamente \n");
-    }
-    else
-    {
-        printf("No se encontro Cliente con ese ID \n");
-    }
-   return ret;
-}
-
-int findClientesById(eClientes* list, int len, int id)
-{
-    int ret = -1;
+    int retorno=-1;
     int i;
-
-    if (list != NULL && len > 0)
+    if(array!=NULL && size>=0)
     {
-        for (i=1; i<len; i++)
+        for(i=0;i<size;i++)
         {
-            if (list[i].isEmpty == 1 && list[i].idClientes == id)
-            {
-                return i;
-            }
+            if(array[i].isEmpty==1)
+                continue;
+            else
+            	printf( "\n ID: %d"
+            	        "\t Cuil: %s"
+            			"\t Nombre: %s"
+            			"\t Direccion %s"
+            			"\t Localidad: %s",
+            			array[i].idClientes,
+            		    array[i].cuit,
+               		    array[i].nombreEmpresa,
+						array[i].direccion,
+						array[i].localidad);
         }
+        retorno=0;
     }
-    return ret;
-}
-
-int removeClientes (eClientes* list, int len, int id)
-{
-    int findEmployee;
-
-    findEmployee = findClientesById(list, len, id);
-
-    if (findEmployee > 0)
-    {
-        list[findEmployee].isEmpty = -1;
-        printf("Empleado eliminado con exito \n");
-    }
-    else
-    {
-        printf("No se ha encontrado empleado con ese ID \n");
-    }
-
-    return findEmployee;
-}
-
-int getDeleteClientes(eClientes* list,int len)
-{
-    int ret=-1;
-    int auxId;
-    utn_getUnsignedInt("\nIngrese id: ","\nValor invalido",1,sizeof(int),0,100,10,&auxId);
-    if(findClientesById(list,len,auxId)>=0)
-    {
-        removeClientes(list,len,auxId);
-        ret=0;
-    }
-    else
-    {
-        printf("\nId invalido");
-    }
-    return ret;
+    return retorno;
 }
 
 
-int printClientes (eClientes* list, int len)
-{
-    int ret = -1;
-    int i;
-
-    if(len > 0)
-    {
-        printf("ID\tNombre Empresa\t\tCuit\t\tDomicilio\t\tLocalidad \n");
-
-        for(i=0; i<len; i++)
-        {
-            if (list[i].isEmpty == 1)
-            {
-
-                printf("%d\t%s\t\t%s\t\t\t%s\t\t%s \n", list[i].idClientes,
-                										list[i].nombreEmpresa,
-                										list[i].cuit,
-														list[i].direccion,
-														list[i].localidad);
-            }
-        }
-        ret = 0;
-    }
-    return ret;
-}
 
