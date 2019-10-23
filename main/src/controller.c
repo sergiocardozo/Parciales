@@ -5,6 +5,7 @@
  *      Author: sergio
  */
 #include <stdio.h>
+#include <stdio_ext.h>
 #include <stdlib.h>
 #include <string.h>
 #include "clientes.h"
@@ -21,6 +22,8 @@ int listarClientesPendiente(eClientes list[], int len, ePedidos list2[], int len
 
 	if(list != NULL && len>0)
 	{
+		__fpurge(stdin);
+		printf("\nID: -- Nombre de la Empresa:  -- cuit:  -- Direccion:	--	Localidad:  -- Pendientes: \n");
 		for(i=0;i<len;i++)
 		{
 			if(list[i].isEmpty == 1)
@@ -40,8 +43,7 @@ int listarClientesPendiente(eClientes list[], int len, ePedidos list2[], int len
 				}
 				list[i].idClientes = list2[i].idClientes;
 
-				printf("\nID: %d -- Nombre de la Empresa: %s -- cuit: %s -- "
-						"Direccion: %s Localidad: %s -- Pendientes: %d\n",list[i].idClientes,
+				printf("\n\n%4d		%-20s		%-10s		%-10s		%-25s		%4d",list[i].idClientes,
 																		list[i].nombreEmpresa,
 																		list[i].cuit,
 																		list[i].direccion,
@@ -63,6 +65,7 @@ int listar_pendientes(eClientes list[], int size, ePedidos list2[], int size2)
 
     if(list2!=NULL && size2>0)
     {
+    	__fpurge(stdin);
     	for(i=0;i<size2;i++)
     	    {
     			if(list2[i].isEmpty==0 && list2[i].estado == 0)
@@ -94,6 +97,7 @@ int pedido_ImprimirArrayProcesado(eClientes list[], int len, ePedidos list2[], i
 
 	    if(list2!=NULL && len2>0)
 	    {
+	    	__fpurge(stdin);
 	    	for(i=0;i<len2;i++)
 	    	    {
 	    			if(list2[i].isEmpty==0 && list2[i].estado == 1)
@@ -122,4 +126,7 @@ int pedido_ImprimirArrayProcesado(eClientes list[], int len, ePedidos list2[], i
 	    return retorno;
 }
 
+void mock_controller()
+{
 
+}

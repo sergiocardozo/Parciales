@@ -16,12 +16,12 @@
 #include "pedidos.h"
 #include "controller.h"
 
-#define QTY_CLIENTES 100
-#define QTY_PEDIDOS 1000
+#define QTY_CLIENTES 10
+#define QTY_PEDIDOS 15
 
 int main()
 {
-	int contadorClientes;
+	int contadorClientes=0;
 	int contadorPedidos;
 	int opcion;
 	char menuPrincipalMensaje[] ="\n1-MENU DE OPCIONES\
@@ -36,17 +36,40 @@ int main()
 		    \n9-SALIR\n\n\
 			\nIngrese opcion:";
 
-	eClientes arrayClientes[QTY_CLIENTES];
-	ePedidos arrayPedidos[QTY_PEDIDOS];
+	eClientes arrayClientes[QTY_CLIENTES];/* = {
+			{0,"Fadeca","20358043047","buenos aires 439","Burzaco",0},
+			{1,"La Zorra","20255043547","Somellera 489","Adrogue",0},
+			{2,"El Rincon","20607543840","Mitre 500","Adrogue",0},
+			{3,"Von Bier","30256043542","Pasco 600","Temperley",0},
+			{4,"Planeta tacos","20666043547","Acasuso 764","Banfield",0},
+			{5,"The Mitre","20255043547","Mitre 1236","Adrogue",0}
+
+	};*/
+	ePedidos arrayPedidos[QTY_PEDIDOS];/*={
+			{0,0,500,0,0,0,0,0,0},
+			{1,0,700,1,300,200,200,0,0},
+			{2,0,300,0,0,0,0,0,0},
+			{3,1,800,1,100,200,200,300,0},
+			{4,2,200,1,100,100,0,0,0},
+			{5,2,500,0,0,0,0,0,0},
+			{6,2,400,0,0,0,0,0,0},
+			{7,2,100,0,0,0,0,0,0},
+			{8,3,500,1,100,200,200,0,0},
+			{9,4,700,1,100,200,200,200,0},
+			{10,5,500,0,0,0,0,0,0},
+			{11,5,600,1,100,200,300,0,0}
+	};*/
+
 	cliente_Inicializar(arrayClientes,QTY_CLIENTES);
 	pedidos_Inicializar(arrayPedidos,QTY_PEDIDOS);
 
 
 	do
 	{
+		__fpurge(stdin);
 		utn_getUnsignedInt(menuPrincipalMensaje,"\nError",1,sizeof(int),1,8,1,&opcion);
 
-		__fpurge(stdin);
+
 
 		switch(opcion)
 		{

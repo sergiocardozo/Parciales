@@ -10,6 +10,7 @@
 
 #include "pedidos.h"
 
+
 typedef struct
 {
 	int idClientes;

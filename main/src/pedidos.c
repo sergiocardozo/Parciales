@@ -6,17 +6,14 @@
  */
 
 #include <stdio.h>
+#include <stdio_ext.h>
 #include <stdlib.h>
 #include <string.h>
 #include "clientes.h"
 #include "pedidos.h"
 #include "utn.h"
 
-static int generarIdPedidos()
-{
-	static int idMax=0;
-	return idMax++;
-}
+#define QTY_PEDIDOS 1000
 
 
 int pedidos_Inicializar(ePedidos array[], int size)
@@ -80,6 +77,7 @@ int pedidos_alta(ePedidos array[], int size, int* contadorID)
     int posicion;
     if(array!=NULL && size>0 && contadorID>0)
     {
+    	__fpurge(stdin);
         if(pedidos_buscarEmpty(array,size,&posicion)==-1)
         {
             printf("\nNo hay lugares vacios");
@@ -89,12 +87,12 @@ int pedidos_alta(ePedidos array[], int size, int* contadorID)
         	if(utn_getUnsignedInt("\n:Ingrese ID de cliente: ","\nError",1,sizeof(int),1,size,2,&array[posicion].idClientes)==0)
         	{
         		(*contadorID)++;
-        		array[posicion].idPedidos = generarIdPedidos();
+        		array[posicion].idPedidos = *contadorID;
         		array[posicion].isEmpty=0;
         		array[posicion].estado=PENDIENTE;
         		utn_getFloat("\n:Ingrese cantidad de kilos: ","\nError",1,sizeof(float),1,10000,2,&array[posicion].kilos);
 
-        		printf("\n_ID: %d _Cantidad de kilos: %f _Estado: Pendiente",array[posicion].idPedidos,array[posicion].kilos);
+        		printf("\nID: %d\tCantidad de kilos: %.2f\tEstado: Pendiente",array[posicion].idPedidos,array[posicion].kilos);
         		retorno=0;
         	}
         	else
@@ -112,9 +110,10 @@ int pedidos_procesar(ePedidos array[], int size)
     int retorno=-1;
     int posicion;
     int id;
-
+    float cantidadTotal =0;
     if(array!=NULL && size>0)
     {
+    	__fpurge(stdin);
     	utn_getUnsignedInt("\nID de pedido: ","\nError",1,sizeof(int),1,size,3,&id);
     	if(pedidos_buscarID(array,size,id,&posicion)==-1)
     	{
@@ -122,6 +121,7 @@ int pedidos_procesar(ePedidos array[], int size)
     	}
     	else
     	{
+    		cantidadTotal = array[posicion].kilos;
     		if(array[posicion].estado==0)
     		 {
     			utn_getFloat("\nCantidad de kilos de HDPE ","\nError",1,sizeof(float),1,3000,1,&array[posicion].HDPE);
@@ -130,20 +130,22 @@ int pedidos_procesar(ePedidos array[], int size)
     			utn_getFloat("\nCantidad de kilos de residuos Desechables ","\nError",1,sizeof(float),1,3000,1,&array[posicion].desechables);
 
     			array[posicion].estado=COMPLETADOS;
-    		    printf("\n ID: %d"
-    		    		"\tCantidad de kilos: %.2f"
-    		    		"\tCantidad de kilosHDPE: %.2f"
-    		    		"\tCantidad de kilosLDPE: %.2f"
-    		    		"\tCantidad de kilosPP: %.2f"
-    		    		"\tCantidad de kilos de residuos desechables: %.2f"
-    		    		"\tEstado: Completado",
-						array[posicion].idPedidos,
-						array[posicion].kilos,
-						array[posicion].HDPE,
-						array[posicion].LPDE,
-						array[posicion].PP,
-						array[posicion].desechables);
 
+    			printf("\n ID: \tCantidad de kilos procesados: \tCantidad de kilosHDPE: \tCantidad de kilosLDPE: \tCantidad de kilosPP: \tCantidad de kilos de residuos desechables: \tEstado: Completado");
+    			if(cantidadTotal >= array[posicion].HDPE + array[posicion].LPDE + array[posicion].PP + array[posicion].desechables)
+    			{
+    				printf("\n%4d\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f",
+													array[posicion].idPedidos,
+													array[posicion].kilos,
+													array[posicion].HDPE,
+													array[posicion].LPDE,
+													array[posicion].PP,
+													array[posicion].desechables);
+    			}
+    			else
+    			{
+    				printf("\nEl peso acumulado no debe superar los %.2f kilos",array[posicion].kilos);
+    			}
     		 }
 
     		else
@@ -166,6 +168,7 @@ int pedidos_listar(ePedidos array[], int size)
     int i;
     if(array!=NULL && size>=0)
     {
+    	__fpurge(stdin);
         for(i=0;i<size;i++)
         {
             if(array[i].isEmpty==1)
@@ -174,8 +177,7 @@ int pedidos_listar(ePedidos array[], int size)
             }
             else
             {
-            	printf("\n ID: %d"
-            	       "\n Cantidad de kilos: %f",
+            	printf("\n ID: %d\t Cantidad de kilos: %f",
             	        array[i].idPedidos,
             	        array[i].kilos);
             	if(array[i].estado==0)
